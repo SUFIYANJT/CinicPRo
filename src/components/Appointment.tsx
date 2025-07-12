@@ -5,28 +5,27 @@ import { DashboardSkeleton } from './SkeletonLoader';
 import { useIsMobile } from '../hooks/useIsMobile';
 import DesktopMonthView from './DesktopMonthView';
 import MobileDayView from './MobileDayView';
-import type { AppointmentData } from '../types/appointments'; // adjust if needed
- // adjust if needed
+import AppointmentModal from './AppointmentModal';
+import type { AppointmentData } from '../types/appointments';
 
 interface AppointmentProps {
   onLogout: () => void;
 }
 
-
-const appointmentsSample: Record<string, AppointmentData[]> = {
-  '2025-07-12': [
-    { time: '10:00', patient: 'Alice', type: 'Checkup' },
-    { time: '14:00', patient: 'Bob', type: 'Dental' },
-  ],
-  '2025-07-13': [
-    { time: '09:30', patient: 'Charlie', type: 'Surgery' },
-  ],
-};
-
 const Appointment: React.FC<AppointmentProps> = ({ onLogout }) => {
-  const [appointments] = useState<Record<string, AppointmentData[]>>(appointmentsSample);
+  const [appointments, setAppointments] = useState<Record<string, AppointmentData[]>>({
+    '2025-07-12': [
+      { time: '10:00', patient: 'Alice', type: 'Checkup' },
+      { time: '14:00', patient: 'Bob', type: 'Dental' },
+    ],
+    '2025-07-13': [
+      { time: '09:30', patient: 'Charlie', type: 'Surgery' },
+    ],
+  });
+
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string>(getToday());
+  const [modalDate, setModalDate] = useState<string | null>(null);
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -34,9 +33,28 @@ const Appointment: React.FC<AppointmentProps> = ({ onLogout }) => {
   }, []);
 
   const handleDayClick = (date: string) => {
-    setSelectedDate(date);
-    console.log(`Clicked on date: ${date}`);
+    setModalDate(date);
   };
+
+  const handleAddAppointment = (newAppt: AppointmentData) => {
+    setAppointments(prev => ({
+      ...prev,
+      [modalDate!]: [...(prev[modalDate!] || []), newAppt]
+    }));
+  };
+
+  const handleRemoveAppointment = (index: number) => {
+    setAppointments(prev => {
+      const updated = [...(prev[modalDate!] || [])];
+      updated.splice(index, 1);
+      return {
+        ...prev,
+        [modalDate!]: updated,
+      };
+    });
+  };
+
+  const getAppointmentsForDate = (date: string) => appointments[date] || [];
 
   return (
     <div className="p-4">
@@ -57,7 +75,7 @@ const Appointment: React.FC<AppointmentProps> = ({ onLogout }) => {
         <MobileDayView
           date={selectedDate}
           onSelectDate={setSelectedDate}
-          appointments={appointments[selectedDate] || []}
+          appointments={getAppointmentsForDate(selectedDate)}
           onDayClick={handleDayClick}
         />
       ) : (
@@ -65,6 +83,17 @@ const Appointment: React.FC<AppointmentProps> = ({ onLogout }) => {
           currentMonth={getCurrentMonth()}
           appointments={appointments}
           onDayClick={handleDayClick}
+        />
+      )}
+
+      {modalDate && (
+        <AppointmentModal
+          date={modalDate}
+          appointments={appointments[modalDate] || []}
+          onClose={() => setModalDate(null)}
+          onAdd={handleAddAppointment}
+          onRemove={handleRemoveAppointment}
+          onLogout={onLogout}
         />
       )}
     </div>
