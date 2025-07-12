@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
 import Appointment from './components/Appointment';
+import { AppLoadingSkeleton } from './components/SkeletonLoader';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -12,7 +13,13 @@ const App: React.FC = () => {
     if (authStatus === 'true') {
       setIsAuthenticated(true);
     }
-    setIsLoading(false);
+    
+    // Simulate app initialization time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const handleLogin = () => {
@@ -26,14 +33,7 @@ const App: React.FC = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="flex items-center space-x-2 text-white">
-          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xl">Loading...</span>
-        </div>
-      </div>
-    );
+    return <AppLoadingSkeleton />;
   }
 
   return (
