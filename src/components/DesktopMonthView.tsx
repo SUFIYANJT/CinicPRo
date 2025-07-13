@@ -1,6 +1,6 @@
 // components/DesktopMonthView.tsx
 import React from 'react';
-import { Filter, Sun, Moon, Calendar, ChevronLeft, ChevronRight, Users, Stethoscope } from 'lucide-react';
+import { Filter, Calendar, Users, Stethoscope } from 'lucide-react';
 import type { AppointmentData } from '../types/appointments';
 
 interface DesktopMonthViewProps {
