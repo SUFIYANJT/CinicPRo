@@ -6,15 +6,27 @@ import { AppLoadingSkeleton } from './components/SkeletonLoader';
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    return localStorage.getItem('darkMode') === 'true';
+  });
+
+  // Set class on html element for tailwind dark mode
+  useEffect(() => {
+    const html = document.documentElement;
+    if (darkMode) {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', darkMode.toString());
+  }, [darkMode]);
 
   useEffect(() => {
-    // Check if user is already logged in
     const authStatus = localStorage.getItem('isAuthenticated');
     if (authStatus === 'true') {
       setIsAuthenticated(true);
     }
-    
-    // Simulate app initialization time
+
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1500);
@@ -37,9 +49,19 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="App">
+    <div className="App min-h-screen transition-colors duration-300 bg-white dark:bg-gray-900 dark:text-white">
       {isAuthenticated ? (
-        <Appointment onLogout={handleLogout} />
+        <>
+          <div className="flex justify-end p-2">
+            <button
+              onClick={() => setDarkMode(prev => !prev)}
+              className="border px-3 py-1 rounded text-sm"
+            >
+              {darkMode ? '☀️ Light' : '🌙 Dark'}
+            </button>
+          </div>
+          <Appointment onLogout={handleLogout} />
+        </>
       ) : (
         <Login onLogin={handleLogin} />
       )}

@@ -57,13 +57,13 @@ const Appointment: React.FC<AppointmentProps> = ({ onLogout }) => {
   const getAppointmentsForDate = (date: string) => appointments[date] || [];
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen">
       <header className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
-          <Calendar className="w-6 h-6" />
-          <h1 className="text-xl font-semibold">Appointments</h1>
+          <Calendar className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+          <h1 className="text-xl font-semibold text-gray-800 dark:text-white">Appointments</h1>
         </div>
-        <button onClick={onLogout} className="flex items-center gap-2 text-red-600">
+        <button onClick={onLogout} className="flex items-center gap-2 text-red-600 dark:text-red-400">
           <LogOut className="w-5 h-5" />
           Logout
         </button>
